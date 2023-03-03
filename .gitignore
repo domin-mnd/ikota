@@ -1,0 +1,9 @@
+*-debug.log
+*-error.log
+/.nyc_output
+/dist
+/lib
+/tmp
+.idea
+node_modules
+oclif.manifest.json
