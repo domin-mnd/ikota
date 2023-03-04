@@ -24,12 +24,12 @@
     "@oclif/core": "^2",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-not-found": "^2.3.20",
-    "@types/inquirer": "^9.0.3",
-    "inquirer": "^9.1.4"
+    "inquirer": "^8.2.5"
   },
   "devDependencies": {
     "@oclif/test": "^2.3.6",
     "@types/chai": "^4",
+    "@types/inquirer": "^8.2.6",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.18.12",
     "@types/supports-color": "^8.1.1",
