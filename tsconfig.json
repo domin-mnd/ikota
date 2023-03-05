@@ -4,12 +4,14 @@
     "importHelpers": true,
     "skipLibCheck": true,
     "module": "commonjs",
+    "allowJs": true,
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "target": "es2019"
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "src/types/*.d.ts",
   ]
 }

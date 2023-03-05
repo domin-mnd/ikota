@@ -1,4 +1,4 @@
-export default () =>
+export default
 `import styled from 'styled-components';
 
 const padding = "1rem";
