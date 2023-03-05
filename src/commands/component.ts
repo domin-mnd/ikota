@@ -92,7 +92,7 @@ export default class Component extends Command {
       preprocessor:
         (flags.preprocessor as SupportedPreprocessor) ??
         config.preprocessor ??
-        "css",
+        "none",
       useLambdaSimplifier: flags.simplify ?? config.useLambdaSimplifier ?? true,
       trailingSpace: flags.space ?? config.trailingSpace ?? true,
     };
@@ -137,7 +137,7 @@ export default class Component extends Command {
     );
 
     // Create styles file only if not tailwind-css
-    if (config.preprocessor !== "tailwind-css") {
+    if (config.preprocessor !== "tailwind-css" && config.preprocessor !== "none") {
       path = `${config.componentPath || "."}/${args.name}/styles.${
         config.preprocessor !== "styled-components"
           ? "module." + config.preprocessor?.slice(0, 4)

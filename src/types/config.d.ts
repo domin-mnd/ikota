@@ -1,5 +1,6 @@
 /** CSS preprocessor used for styling */
 export type SupportedPreprocessor =
+  | "none"
   | "css"
   | "sass"
   | "scss"

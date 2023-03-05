@@ -55,7 +55,8 @@ export const hook: Hook<"init"> = async (options): Promise<void> => {
           message: "What preprocessor do you use?",
           type: "list",
           choices: [
-            { name: "None", value: "css" },
+            { name: "None", value: "none" },
+            { name: "CSS", value: "css" },
             { name: "Sass", value: "sass" },
             { name: "SCSS", value: "scss" },
             { name: "Less", value: "less" },

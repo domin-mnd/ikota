@@ -11,7 +11,7 @@ import { join } from "path";
 export function createStyles(config: IkotaConfig): string {
   if (config.preprocessor === "styled-components") {
     return styledComponents;
-  } else if (config.preprocessor !== "tailwind-css") {
+  } else if (config.preprocessor !== "tailwind-css" && config.preprocessor !== "none") {
     return readFileSync(
       join(
         __dirname,

@@ -6,7 +6,7 @@ import color from "@oclif/color";
 /**
  * Create component function used to generate a string to write file as
  * @param {IkotaConfig} config Ikota configuration (may also be from flags)
- * @param {string} name Name of the component 
+ * @param {string} name Name of the component
  * @returns {string} string used to copy & paste to the file
  */
 export function createComponent(config: IkotaConfig, name: string): string {
@@ -128,6 +128,39 @@ export function createComponent(config: IkotaConfig, name: string): string {
           "  return (",
           '    <div className="p-4">',
           `      <button className="appearance-none">${
+            config.addConfigFile ? "{buttonLabel}" : "Button"
+          }</button>`,
+          "    </div>",
+          "  );",
+          "}",
+        ].join("\n");
+      }
+      break;
+    case "none":
+      if (config?.useLambdaSimplifier) {
+        response += [
+          `export const ${capitalCase(name)}${
+            config.useTypescript
+              ? ": FunctionComponent = (): ReactElement"
+              : " = ()"
+          } => (`,
+          "  <div>",
+          `    <button>${
+            config.addConfigFile ? "{buttonLabel}" : "Button"
+          }</button>`,
+          "  </div>",
+          ")",
+        ].join("\n");
+      } else {
+        response += [
+          `export const ${capitalCase(name)}${
+            config.useTypescript
+              ? ": FunctionComponent = (): ReactElement"
+              : " = ()"
+          } => {`,
+          "  return (",
+          "    <div>",
+          `      <button>${
             config.addConfigFile ? "{buttonLabel}" : "Button"
           }</button>`,
           "    </div>",
