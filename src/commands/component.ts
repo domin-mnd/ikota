@@ -1,12 +1,13 @@
 import type { IkotaConfig, SupportedPreprocessor } from "../types";
 import { Command, Flags, Args } from "@oclif/core";
 import { color } from "@oclif/color";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
 import { join } from "path";
+
 import { createComponent } from "../templates/component";
-import styledComponents from "../templates/styling/styles";
-import { javascriptConfig, typescriptConfig } from "../templates/config";
-import { createIndex } from "../templates";
+import { createConfig } from "../templates/config";
+import { createIndex } from "../templates/index";
+import { createStyles } from "../templates/styles";
 
 export default class Component extends Command {
   static description = "Generate a component.";
@@ -18,19 +19,23 @@ export default class Component extends Command {
       char: "p",
       description: "Where to place component path",
     }),
-    typescript: Flags.boolean({
-      char: "t",
-      aliases: ["ts"],
-      description: "Whether to use typescript or not",
+    javascript: Flags.boolean({
+      char: "j",
+      aliases: ["js"],
+      allowNo: true,
+      default: false,
+      description: "Whether to use typescript or javascript",
     }),
     addConfig: Flags.boolean({
       char: "c",
-      aliases: ["ac"],
+      aliases: ["ac", "addconfig"],
+      allowNo: true,
       description: "Add config file to the component",
     }),
     addIndex: Flags.boolean({
       char: "i",
-      aliases: ["ai"],
+      aliases: ["ai", "addindex"],
+      allowNo: true,
       description: "Add index file to the component",
     }),
     preprocessor: Flags.string({
@@ -40,6 +45,7 @@ export default class Component extends Command {
     }),
     simplify: Flags.boolean({
       char: "s",
+      allowNo: true,
       description: "Simplify the component function with lambda",
     }),
     space: Flags.boolean({
@@ -77,7 +83,7 @@ export default class Component extends Command {
     // The priority is: flags -> config file -> default values
     config = {
       componentPath: flags.path ?? config.componentPath ?? "src/components",
-      useTypescript: flags.typescript ?? config.useTypescript ?? true,
+      useTypescript: !flags.javascript ?? config.useTypescript ?? true,
       addConfigFile: flags.addConfig ?? config.addConfigFile ?? false,
       addIndexFile: flags.addIndex ?? config.addIndexFile ?? false,
       preprocessor:
@@ -88,25 +94,9 @@ export default class Component extends Command {
       trailingSpace: flags.space ?? config.trailingSpace ?? true,
     };
 
-    let stylesFile;
-
-    // Ignore tailwind css
-    if (config.preprocessor === "styled-components") {
-      stylesFile = styledComponents;
-    } else if (config.preprocessor !== "tailwind-css") {
-      stylesFile = readFileSync(
-        join(
-          __dirname,
-          "../templates/styling/styles.module." +
-            config.preprocessor?.slice(0, 4)
-        )
-      );
-    }
-
     let mainFile: string = createComponent(config, args.name);
-    let configFile: string = config.useTypescript
-      ? typescriptConfig
-      : javascriptConfig;
+    let stylesFile: string = createStyles(config);
+    let configFile: string = createConfig(config);
     let indexFile: string = createIndex(config);
 
     // Adding trailing space
@@ -137,7 +127,7 @@ export default class Component extends Command {
     // Create main component file
     path = `${config.componentPath || "."}/${args.name}/component.tsx`;
     writeFileSync(path, mainFile);
-    this.log(`Created ${color.cmd(path)} file`);
+    this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
 
     // Create styles file only if not tailwind-css
     if (config.preprocessor !== "tailwind-css") {
@@ -147,7 +137,7 @@ export default class Component extends Command {
           : "ts"
       }`;
       writeFileSync(path, stylesFile as string);
-      this.log(`Created ${color.cmd(path)} file`);
+      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
     }
 
     // Create config file
@@ -159,7 +149,7 @@ export default class Component extends Command {
         path,
         configFile
       );
-      this.log(`Created ${color.cmd(path)} file`);
+      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
     }
 
     // Create index file
@@ -168,7 +158,7 @@ export default class Component extends Command {
         config.useTypescript ? "ts" : "js"
       }`;
       writeFileSync(path, indexFile);
-      this.log(`Created ${color.cmd(path)} file`);
+      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
     }
 
     this.log(`Have fun <3`);

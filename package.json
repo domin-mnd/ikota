@@ -55,6 +55,7 @@
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b && shx cp ./src/templates/styling/styles.module.* ./dist/templates/styling",
+    "postbuild": "shx cp -r ./src/types ./dist/types",
     "lint": "eslint . --ext .ts --config .eslintrc",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
