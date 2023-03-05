@@ -3,7 +3,12 @@ import { access, writeFileSync } from "fs";
 import { prompt } from "inquirer";
 import color from "@oclif/color";
 
-export const hook: Hook<"init"> = async (options) => {
+/**
+ * Initialization function to create config file, only works if no flags & there's package.json
+ * @param {any} options Init options
+ * @returns {Promise<void>}
+ */
+export const hook: Hook<"init"> = async (options): Promise<void> => {
   access("./package.json", (error) => {
     if (error)
       ux.error(
@@ -12,7 +17,10 @@ export const hook: Hook<"init"> = async (options) => {
   });
 
   // If there are flags then we do not do initialization
-  if (!options.argv.some(arg => arg.startsWith("-")) || options.argv.length === 0) {
+  if (
+    !options.argv.some((arg) => arg.startsWith("-")) ||
+    options.argv.length === 0
+  ) {
     access("./ikota.config.js", async (error) => {
       if (!error) return;
       ux.log("Cannot find the ikota configuration.");

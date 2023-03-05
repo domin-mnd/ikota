@@ -127,7 +127,11 @@ export default class Component extends Command {
     // Create main component file
     path = `${config.componentPath || "."}/${args.name}/component.tsx`;
     writeFileSync(path, mainFile);
-    this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
+    this.log(
+      `Created ${color.cmd(path)} file ${color.blackBright(
+        statSync(path).size + "B"
+      )}`
+    );
 
     // Create styles file only if not tailwind-css
     if (config.preprocessor !== "tailwind-css") {
@@ -137,7 +141,11 @@ export default class Component extends Command {
           : "ts"
       }`;
       writeFileSync(path, stylesFile as string);
-      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
+      this.log(
+        `Created ${color.cmd(path)} file ${color.blackBright(
+          statSync(path).size + "B"
+        )}`
+      );
     }
 
     // Create config file
@@ -145,11 +153,12 @@ export default class Component extends Command {
       path = `${config.componentPath || "."}/${args.name}/config.${
         config.useTypescript ? "ts" : "js"
       }`;
-      writeFileSync(
-        path,
-        configFile
+      writeFileSync(path, configFile);
+      this.log(
+        `Created ${color.cmd(path)} file ${color.blackBright(
+          statSync(path).size + "B"
+        )}`
       );
-      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
     }
 
     // Create index file
@@ -158,7 +167,11 @@ export default class Component extends Command {
         config.useTypescript ? "ts" : "js"
       }`;
       writeFileSync(path, indexFile);
-      this.log(`Created ${color.cmd(path)} file ${color.blackBright(statSync(path).size + "B")}`);
+      this.log(
+        `Created ${color.cmd(path)} file ${color.blackBright(
+          statSync(path).size + "B"
+        )}`
+      );
     }
 
     this.log(`Have fun <3`);
