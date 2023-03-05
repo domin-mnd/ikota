@@ -14,13 +14,25 @@ export interface IkotaConfig {
   componentPath?: string;
   /** Use typescript in the project. Defines whether to use JS or TS */
   useTypescript?: boolean;
-  /** Add additional config.ts/config.js file in the component folder */
+  /** Add additional config.ts/js file in the component folder */
   addConfigFile?: boolean;
-  /** Add index file that exports everything from the folder */
+  /** Add index.ts/js file that exports everything from the folder */
   addIndexFile?: boolean;
   /** CSS preprocessor used for styling */
   preprocessor?: SupportedPreprocessor;
-  /** A way to write functions: either to use () => [component] or () => { return [component] } */
+  /**
+   * A way to write lambda functions
+   * @example
+   * () => (
+   *   [component]
+   * ) // Simplified
+   * @example
+   * () => {
+   *   return (
+   *     [component]
+   *   )
+   * } // Not simplified
+   */
   useLambdaSimplifier?: boolean;
   /** Trailing space at the end of every component's file */
   trailingSpace?: boolean;
