@@ -106,7 +106,7 @@ export function createComponent(config: IkotaConfig, name: string): string {
     case "tailwind-css":
       if (config?.useLambdaSimplifier) {
         response += [
-          `export const ${capitalCase(name)}${
+          `\nexport const ${capitalCase(name)}${
             config.useTypescript
               ? ": FunctionComponent = (): ReactElement"
               : " = ()"
@@ -120,7 +120,7 @@ export function createComponent(config: IkotaConfig, name: string): string {
         ].join("\n");
       } else {
         response += [
-          `export const ${capitalCase(name)}${
+          `\nexport const ${capitalCase(name)}${
             config.useTypescript
               ? ": FunctionComponent = (): ReactElement"
               : " = ()"
@@ -139,7 +139,7 @@ export function createComponent(config: IkotaConfig, name: string): string {
     case "none":
       if (config?.useLambdaSimplifier) {
         response += [
-          `export const ${capitalCase(name)}${
+          `\nexport const ${capitalCase(name)}${
             config.useTypescript
               ? ": FunctionComponent = (): ReactElement"
               : " = ()"
@@ -153,7 +153,7 @@ export function createComponent(config: IkotaConfig, name: string): string {
         ].join("\n");
       } else {
         response += [
-          `export const ${capitalCase(name)}${
+          `\nexport const ${capitalCase(name)}${
             config.useTypescript
               ? ": FunctionComponent = (): ReactElement"
               : " = ()"

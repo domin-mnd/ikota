@@ -9,7 +9,7 @@ import color from "@oclif/color";
  * @returns {Promise<void>}
  */
 export const hook: Hook<"init"> = async (options): Promise<void> => {
-  if (options.id === "config") return;
+  if (options.id === "config" || options.id === "help" || !options.id) return;
 
   access("./package.json", (error) => {
     if (error)
