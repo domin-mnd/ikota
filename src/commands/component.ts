@@ -12,7 +12,10 @@ import { createStyles } from "../templates/styles";
 export default class Component extends Command {
   static description = "Generate a component.";
 
-  static examples = ["<%= config.bin %> <%= command.id %>"];
+  static examples = [
+    "<%= config.bin %> <%= command.id %>",
+    "<%= config.bin %> <%= command.id %> niceBox --javascript",
+  ];
 
   static flags = {
     path: Flags.string({
@@ -125,7 +128,7 @@ export default class Component extends Command {
     this.log(`Created ${color.cmd(path)} folder`);
 
     // Create main component file
-    path = `${config.componentPath || "."}/${args.name}/component.tsx`;
+    path = `${config.componentPath || "."}/${args.name}/component.${config.useTypescript ? "tsx" : "jsx"}`;
     writeFileSync(path, mainFile);
     this.log(
       `Created ${color.cmd(path)} file ${color.blackBright(
@@ -138,7 +141,7 @@ export default class Component extends Command {
       path = `${config.componentPath || "."}/${args.name}/styles.${
         config.preprocessor !== "styled-components"
           ? "module." + config.preprocessor?.slice(0, 4)
-          : "ts"
+          : config.useTypescript ? "ts" : "js"
       }`;
       writeFileSync(path, stylesFile as string);
       this.log(

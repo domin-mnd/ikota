@@ -9,6 +9,8 @@ import color from "@oclif/color";
  * @returns {Promise<void>}
  */
 export const hook: Hook<"init"> = async (options): Promise<void> => {
+  if (options.id === "config") return;
+
   access("./package.json", (error) => {
     if (error)
       ux.error(
@@ -56,7 +58,7 @@ export const hook: Hook<"init"> = async (options): Promise<void> => {
             { name: "None", value: "css" },
             { name: "Sass", value: "sass" },
             { name: "SCSS", value: "scss" },
-            { name: "LESS", value: "less" },
+            { name: "Less", value: "less" },
             { name: "Tailwind CSS", value: "tailwind-css" },
             { name: "Stylus", value: "stylus" },
             { name: "Styled components", value: "styled-components" },
