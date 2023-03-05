@@ -53,7 +53,7 @@
     "build": "shx rm -rf dist && tsc -b && shx cp ./src/templates/styling/styles.module.* ./dist/templates/styling",
     "postbuild": "shx cp -r ./src/types ./dist/types",
     "postpack": "shx rm -f oclif.manifest.json",
-    "prepack": "yarn build && oclif manifest && oclif readme",
+    "prepack": "yarn build && oclif manifest",
     "prettier:check": "prettier --check \"**/*.ts\"",
     "prettier:write": "prettier --write \"**/*.ts\"",
     "version": "oclif readme && git add README.md"
