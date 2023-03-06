@@ -26,7 +26,6 @@ export default class Component extends Command {
       char: "j",
       aliases: ["js"],
       allowNo: true,
-      default: false,
       description: "Whether to use typescript or javascript",
     }),
     addConfig: Flags.boolean({
