@@ -16,7 +16,7 @@ $ ikota component # or
 $ npx ikota component
 ```
 
-## Usage
+# Usage
 
 CLI offers a single command - `component` as for now.
 
