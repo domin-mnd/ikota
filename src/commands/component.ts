@@ -1,4 +1,4 @@
-import type { IkotaConfig, SupportedPreprocessor } from "../types";
+import type { IkotaConfig, SupportedNativePreprocessor } from "../types";
 import { Command, Flags, Args } from "@oclif/core";
 import { color } from "@oclif/color";
 import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
@@ -89,17 +89,17 @@ export default class Component extends Command {
       addConfigFile: flags.addConfig ?? config.addConfigFile ?? false,
       addIndexFile: flags.addIndex ?? config.addIndexFile ?? false,
       preprocessor:
-        (flags.preprocessor as SupportedPreprocessor) ??
+        (flags.preprocessor as SupportedNativePreprocessor) ??
         config.preprocessor ??
         "none",
       useLambdaSimplifier: flags.simplify ?? config.useLambdaSimplifier ?? true,
       trailingSpace: flags.space ?? config.trailingSpace ?? true,
     };
 
-    let mainFile: string = createComponent(config, args.name);
-    let stylesFile: string = createStyles(config);
-    let configFile: string = createConfig(config);
-    let indexFile: string = createIndex(config);
+    let mainFile: string = await createComponent(config, args.name);
+    let stylesFile: string = await createStyles(config, args.name);
+    let configFile: string = await createConfig(config, args.name);
+    let indexFile: string = await createIndex(config, args.name);
 
     // Adding trailing space
     if (config.trailingSpace) {

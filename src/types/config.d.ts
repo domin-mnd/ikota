@@ -1,5 +1,5 @@
 /** CSS preprocessor used for styling */
-export type SupportedPreprocessor =
+export type SupportedNativePreprocessor =
   | "none"
   | "css"
   | "sass"
@@ -20,7 +20,7 @@ export interface IkotaConfig {
   /** Add index.ts/js file that exports everything from the folder */
   addIndexFile?: boolean;
   /** CSS preprocessor used for styling */
-  preprocessor?: SupportedPreprocessor;
+  preprocessor?: SupportedNativePreprocessor;
   /**
    * A way to write lambda functions
    * @example
@@ -37,4 +37,10 @@ export interface IkotaConfig {
   useLambdaSimplifier?: boolean;
   /** Trailing space at the end of every component's file */
   trailingSpace?: boolean;
+  /**
+   * Ikota plugins array with modules to import
+   * @example
+   * ["@ikota/mantine"]
+   */
+  plugins?: string[];
 }

@@ -1,7 +1,10 @@
-import type { IkotaConfig } from "../types";
-import { capitalCase } from "../utils/capitalCase";
+import type { IkotaConfig, IkotaPlugin } from "../types";
 import { ux } from "@oclif/core";
 import color from "@oclif/color";
+import { componentWithModuleStyles } from "./components/module";
+import { componentWithStyledComponents } from "./components/styled-components";
+import { componentWithTailwindCSS } from "./components/tailwind";
+import { componentWithoutStyling } from "./components/none";
 
 /**
  * Create component function used to generate a string to write file as
@@ -9,7 +12,7 @@ import color from "@oclif/color";
  * @param {string} name Name of the component
  * @returns {string} string used to copy & paste to the file
  */
-export function createComponent(config: IkotaConfig, name: string): string {
+export async function createComponent(config: IkotaConfig, name: string): Promise<string> {
   let response: string = "";
 
   if (config.useTypescript) {
@@ -27,149 +30,37 @@ export function createComponent(config: IkotaConfig, name: string): string {
     case "sass":
     case "scss":
     case "stylus":
-      // File extension is similar to preprocessor selected
-      // However stylus' file ext is styl, so we slice
-      response += `import classes from "./styles.module.${config.preprocessor.slice(
-        0,
-        4
-      )}";\n\n`;
-
-      if (config?.useLambdaSimplifier) {
-        response += [
-          `export const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => (`,
-          "  <div className={classes.box}>",
-          `    <button className={classes.button}>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "  </div>",
-          ")",
-        ].join("\n");
-      } else {
-        response += [
-          `export const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => {`,
-          "  return (",
-          "    <div className={classes.box}>",
-          `      <button className={classes.button}>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "    </div>",
-          "  );",
-          "}",
-        ].join("\n");
-      }
+      response += componentWithModuleStyles(config, name);
       break;
-
     case "styled-components":
-      response += 'import { Container, Button } from "./styles";\n\n';
-
-      if (config?.useLambdaSimplifier) {
-        response += [
-          `export const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => (`,
-          "  <Container>",
-          `    <Button>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</Button>`,
-          "  </Container>",
-          ")",
-        ].join("\n");
-      } else {
-        response += [
-          `export const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => {`,
-          "  return (",
-          "    <Container>",
-          `      <Button>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</Button>`,
-          "    </Container>",
-          "  );",
-          "}",
-        ].join("\n");
-      }
+      response += componentWithStyledComponents(config, name);
       break;
-
     case "tailwind-css":
-      if (config?.useLambdaSimplifier) {
-        response += [
-          `\nexport const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => (`,
-          '  <div className="p-4">',
-          `    <button className="appearance-none">${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "  </div>",
-          ")",
-        ].join("\n");
-      } else {
-        response += [
-          `\nexport const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => {`,
-          "  return (",
-          '    <div className="p-4">',
-          `      <button className="appearance-none">${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "    </div>",
-          "  );",
-          "}",
-        ].join("\n");
-      }
+      response += componentWithTailwindCSS(config, name);
       break;
     case "none":
-      if (config?.useLambdaSimplifier) {
-        response += [
-          `\nexport const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => (`,
-          "  <div>",
-          `    <button>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "  </div>",
-          ")",
-        ].join("\n");
-      } else {
-        response += [
-          `\nexport const ${capitalCase(name)}${
-            config.useTypescript
-              ? ": FunctionComponent = (): ReactElement"
-              : " = ()"
-          } => {`,
-          "  return (",
-          "    <div>",
-          `      <button>${
-            config.addConfigFile ? "{buttonLabel}" : "Button"
-          }</button>`,
-          "    </div>",
-          "  );",
-          "}",
-        ].join("\n");
-      }
+      response += componentWithoutStyling(config, name);
       break;
     default:
+      if (config.plugins && config.preprocessor) {
+        for (let i in config.plugins) {
+          const pluginWithPreprocessor: IkotaPlugin = await import(config.plugins[i]);
+
+          if (pluginWithPreprocessor.components) {
+            if (
+              Object.keys(pluginWithPreprocessor.components).includes(
+                config.preprocessor
+              )
+            ) {
+              response += pluginWithPreprocessor.components[
+                config.preprocessor
+              ].component(config, name);
+              return response;
+            }
+          }
+        }
+      }
+
       ux.error(
         "Invalid preprocessor was provided: " + color.red(config.preprocessor)
       );
