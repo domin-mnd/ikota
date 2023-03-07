@@ -1,3 +1,5 @@
+import { IkotaPlugin } from "./plugin";
+
 /** CSS preprocessor used for styling */
 export type SupportedNativePreprocessor =
   | "none"
@@ -40,7 +42,16 @@ export interface IkotaConfig {
   /**
    * Ikota plugins array with modules to import
    * @example
-   * ["@ikota/mantine"]
+   * const ikotaExample = require("@ikota/example");
+   * 
+   * module.exports = {
+   *   plugins: [ikotaExample]
+   * }
    */
-  plugins?: string[];
+  plugins?: IkotaPlugin[];
+
+  /** Plugin custom options */
+  other?: {
+    [key: string]: any;
+  }
 }

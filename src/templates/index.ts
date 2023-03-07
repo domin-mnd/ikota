@@ -8,14 +8,14 @@ import { ux } from "@oclif/core";
  * @returns {string} string used to copy & paste to the file
  */
 export async function createIndex(config: IkotaConfig, name: string): Promise<string> {
-  let response: string = 'export * from "./component"';
+  let response: string = 'export * from "./component";';
 
   if (config.addConfigFile) {
-    response += '\nexport * from "./config"';
+    response += '\nexport * from "./config";';
   }
 
   if (config.preprocessor === "styled-components") {
-    response += '\nexport * from "./styles"';
+    response += '\nexport * from "./styles";';
   }
 
   switch (config.preprocessor) {
@@ -31,7 +31,7 @@ export async function createIndex(config: IkotaConfig, name: string): Promise<st
     default:
       if (config.plugins && config.preprocessor) {
         for (let i in config.plugins) {
-          const pluginWithPreprocessor: IkotaPlugin = await import(config.plugins[i]);
+          const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
 
           if (pluginWithPreprocessor.components) {
             if (
@@ -41,7 +41,7 @@ export async function createIndex(config: IkotaConfig, name: string): Promise<st
             ) {
               return pluginWithPreprocessor.components[
                 config.preprocessor
-              ].index(config, name);
+              ].index.function(config, name);
             }
           }
         }

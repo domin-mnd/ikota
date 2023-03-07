@@ -44,7 +44,7 @@ export async function createComponent(config: IkotaConfig, name: string): Promis
     default:
       if (config.plugins && config.preprocessor) {
         for (let i in config.plugins) {
-          const pluginWithPreprocessor: IkotaPlugin = await import(config.plugins[i]);
+          const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
 
           if (pluginWithPreprocessor.components) {
             if (
@@ -54,7 +54,7 @@ export async function createComponent(config: IkotaConfig, name: string): Promis
             ) {
               response += pluginWithPreprocessor.components[
                 config.preprocessor
-              ].component(config, name);
+              ].component.function(config, name);
               return response;
             }
           }

@@ -78,6 +78,7 @@ export const hook: Hook<"init"> = async (options): Promise<void> => {
         `  preprocessor: "${res.preprocessor}",`,
         `  useLambdaSimplifier: true,`,
         `  trailingSpace: true,`,
+        `  plugins: []`,
         "}",
       ].join("\n");
       writeFileSync("./ikota.config.js", template);

@@ -1,13 +1,18 @@
 import type { IkotaConfig, SupportedNativePreprocessor } from "../types";
 import { Command, Flags, Args } from "@oclif/core";
 import { color } from "@oclif/color";
-import { existsSync, mkdirSync, statSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
 import { createComponent } from "../templates/component";
 import { createConfig } from "../templates/config";
 import { createIndex } from "../templates/index";
 import { createStyles } from "../templates/styles";
+
+import { createComponentFile } from "../parsers/component";
+import { createStylesFile } from "../parsers/styles";
+import { createConfigFile } from "../parsers/config";
+import { createIndexFile } from "../parsers";
 
 export default class Component extends Command {
   static description = "Generate a component.";
@@ -16,7 +21,7 @@ export default class Component extends Command {
     "<%= config.bin %> <%= command.id %>",
     "<%= config.bin %> <%= command.id %> niceBox --javascript",
   ];
-
+  
   static flags = {
     path: Flags.string({
       char: "p",
@@ -94,6 +99,8 @@ export default class Component extends Command {
         "none",
       useLambdaSimplifier: flags.simplify ?? config.useLambdaSimplifier ?? true,
       trailingSpace: flags.space ?? config.trailingSpace ?? true,
+      plugins: config.plugins ?? [],
+      other: config.other ?? {},
     };
 
     let mainFile: string = await createComponent(config, args.name);
@@ -126,55 +133,12 @@ export default class Component extends Command {
     });
     this.log(`Created ${color.cmd(path)} folder`);
 
-    // Create main component file
-    path = `${config.componentPath || "."}/${args.name}/component.${config.useTypescript ? "tsx" : "jsx"}`;
-    writeFileSync(path, mainFile);
-    this.log(
-      `Created ${color.cmd(path)} file ${color.blackBright(
-        statSync(path).size + "B"
-      )}`
-    );
-
-    // Create styles file only if not tailwind-css
-    if (config.preprocessor !== "tailwind-css" && config.preprocessor !== "none") {
-      path = `${config.componentPath || "."}/${args.name}/styles.${
-        config.preprocessor !== "styled-components"
-          ? "module." + config.preprocessor?.slice(0, 4)
-          : config.useTypescript ? "ts" : "js"
-      }`;
-      writeFileSync(path, stylesFile as string);
-      this.log(
-        `Created ${color.cmd(path)} file ${color.blackBright(
-          statSync(path).size + "B"
-        )}`
-      );
-    }
-
-    // Create config file
-    if (config.addConfigFile) {
-      path = `${config.componentPath || "."}/${args.name}/config.${
-        config.useTypescript ? "ts" : "js"
-      }`;
-      writeFileSync(path, configFile);
-      this.log(
-        `Created ${color.cmd(path)} file ${color.blackBright(
-          statSync(path).size + "B"
-        )}`
-      );
-    }
-
-    // Create index file
-    if (config.addIndexFile) {
-      path = `${config.componentPath || "."}/${args.name}/index.${
-        config.useTypescript ? "ts" : "js"
-      }`;
-      writeFileSync(path, indexFile);
-      this.log(
-        `Created ${color.cmd(path)} file ${color.blackBright(
-          statSync(path).size + "B"
-        )}`
-      );
-    }
+    await createComponentFile(config, args.name, mainFile);
+    await createStylesFile(config, args.name, stylesFile);
+    if (config.addConfigFile)
+      await createConfigFile(config, args.name, configFile);
+    if (config.addIndexFile)
+      await createIndexFile(config, args.name, indexFile);
 
     this.log(`Have fun <3`);
   }

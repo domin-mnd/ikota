@@ -3,16 +3,25 @@ import type { IkotaConfig } from "./config";
 /** Executable to run for certain files */
 export type ExecutablePlug = (config: IkotaConfig, name: string) => string;
 
+/** A wrapper interface to add the fileName */
+export interface FilePlug {
+  fileName: ExecutablePlug;
+  function: ExecutablePlug;
+}
+
 /** Functions to run when generating components for certain files */
 export interface ComponentPlug {
   /** Styling file returning string */
-  style: ExecutablePlug;
+  style: FilePlug;
   /** Main component file returning string */
-  component: ExecutablePlug;
+  component: FilePlug;
   /** Exporting file returning string */
-  index: ExecutablePlug;
+  index: FilePlug;
   /** Configuration file returning string */
-  config: ExecutablePlug;
+  config: FilePlug;
+
+  /** Soon to rewrite the plug for creating any file */
+  [key: string]: ExecutablePlug;
 }
 
 /** A "preprocessor" to add as a template */

@@ -1,7 +1,14 @@
 import { Command } from "@oclif/core";
-import { prompt } from "inquirer";
-import { writeFileSync } from "fs";
 import color from "@oclif/color";
+import { prompt } from "inquirer";
+import { existsSync, writeFileSync } from "fs";
+import { join } from "path";
+import { IkotaConfig, IkotaPlugin } from "../types";
+
+interface PromptPreprocessor {
+  name: string;
+  value: string;
+}
 
 export default class Component extends Command {
   static description = "Initialize the config file.";
@@ -9,11 +16,47 @@ export default class Component extends Command {
   static examples = ["<%= config.bin %> <%= command.id %>"];
 
   public async run(): Promise<void> {
-    this.log(
-      `Processing the configuration of ${color.cmd(
-        "ikota.config.js"
-      )}`
-    );
+    this.log(`Processing the configuration of ${color.cmd("ikota.config.js")}`);
+
+    // Initialize plugins if they were provided
+    let otherPreprocessors: PromptPreprocessor[] = [];
+    let plugins: IkotaPlugin[] = [];
+    if (existsSync("./ikota.config.js")) {
+      try {
+        const config: IkotaConfig = require(join(
+          process.cwd(),
+          "./ikota.config.js"
+        ));
+
+        if (config.plugins && config.preprocessor) {
+          plugins = config.plugins;
+
+          for (let i in config.plugins) {
+            const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
+
+            if (pluginWithPreprocessor.components) {
+              // Add more preprocessors from the plugin
+              otherPreprocessors = [
+                ...otherPreprocessors,
+                ...Object.keys(pluginWithPreprocessor.components).map(
+                  (component): PromptPreprocessor => ({
+                    name: component,
+                    value: component,
+                  })
+                ),
+              ];
+            }
+          }
+        }
+      } catch {
+        this.error(
+          `Invalid configuration import, consider deleting ${color.red(
+            "ikota.config.js"
+          )} file, then try again!`
+        );
+      }
+    }
+
     let res = await prompt([
       {
         name: "componentPath",
@@ -35,7 +78,8 @@ export default class Component extends Command {
       },
       {
         name: "addIndexFile",
-        message: "Would you want to include index file to export all of the essentials?",
+        message:
+          "Would you want to include index file to export all of the essentials?",
         type: "confirm",
         default: false,
       },
@@ -52,11 +96,13 @@ export default class Component extends Command {
           { name: "Tailwind CSS", value: "tailwind-css" },
           { name: "Stylus", value: "stylus" },
           { name: "Styled components", value: "styled-components" },
+          ...otherPreprocessors,
         ],
       },
       {
         name: "useLambdaSimplifier",
-        message: "Do you want to simplify your component functions with lambda return?",
+        message:
+          "Do you want to simplify your component functions with lambda return?",
         type: "confirm",
         default: false,
       },
@@ -78,7 +124,8 @@ export default class Component extends Command {
       `  addIndexFile: ${res.addIndexFile},`,
       `  preprocessor: "${res.preprocessor}",`,
       `  useLambdaSimplifier: ${res.useLambdaSimplifier},`,
-      `  trailingSpace: ${res.trailingSpace}`,
+      `  trailingSpace: ${res.trailingSpace},`,
+      `  plugins: []`,
       "}",
     ].join("\n");
     writeFileSync("./ikota.config.js", template);

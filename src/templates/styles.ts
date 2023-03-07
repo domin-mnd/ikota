@@ -34,7 +34,7 @@ export async function createStyles(config: IkotaConfig, name: string): Promise<s
     default:
       if (config.plugins && config.preprocessor) {
         for (let i in config.plugins) {
-          const pluginWithPreprocessor: IkotaPlugin = await import(config.plugins[i]);
+          const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
 
           if (pluginWithPreprocessor.components) {
             if (
@@ -44,7 +44,7 @@ export async function createStyles(config: IkotaConfig, name: string): Promise<s
             ) {
               return pluginWithPreprocessor.components[
                 config.preprocessor
-              ].style(config, name);
+              ].style.function(config, name);
             }
           }
         }

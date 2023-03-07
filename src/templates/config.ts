@@ -23,7 +23,7 @@ export async function createConfig(config: IkotaConfig, name: string): Promise<s
     default:
       if (config.plugins && config.preprocessor) {
         for (let i in config.plugins) {
-          const pluginWithPreprocessor: IkotaPlugin = await import(config.plugins[i]);
+          const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
 
           if (pluginWithPreprocessor.components) {
             if (
@@ -33,7 +33,7 @@ export async function createConfig(config: IkotaConfig, name: string): Promise<s
             ) {
               return pluginWithPreprocessor.components[
                 config.preprocessor
-              ].config(config, name);
+              ].config.function(config, name);
             }
           }
         }
