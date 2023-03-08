@@ -48,7 +48,7 @@ Plugins are the features that extend the work of ikota
 component generation. With them you can use custom
 preprocessors & much more. Some of the examples would be:
 
-- [`@ikota/example`](https://github.com/Domin-MND/ikota-plugins/tree/master/example) - An example plugin implementing styl preprocessor
+- [`@ikota/example`](https://github.com/Domin-MND/ikota-plugins/tree/master/example) - An example plugin implementing `Stylus` preprocessor
 - more soon...
 
 ## Create a plugin
@@ -108,24 +108,24 @@ export const components = {
     component: {
       // Name of the file
       // Leave the name empty if you don't want to create a file
-      fileName: (config: IkotaConfig, name: string) => ...,
+      fileName: (config: IkotaConfig, name: string) => "...",
       // String to write file as
-      function: (config: IkotaConfig, name: string) => ...,
+      function: (config: IkotaConfig, name: string) => "...",
     },
     // Styling file
     style: {
-      fileName: (config: IkotaConfig, name: string) => ...,
-      function: (config: IkotaConfig, name: string) => ...,
+      fileName: (config: IkotaConfig, name: string) => "...",
+      function: (config: IkotaConfig, name: string) => "...",
     },
     // Config file
     config: {
-      fileName: (config: IkotaConfig, name: string) => ...,
-      function: (config: IkotaConfig, name: string) => ...,
+      fileName: (config: IkotaConfig, name: string) => "...",
+      function: (config: IkotaConfig, name: string) => "...",
     },
     // Exports file
     index: {
-      fileName: (config: IkotaConfig, name: string) => ...,
-      function: (config: IkotaConfig, name: string) => ...,
+      fileName: (config: IkotaConfig, name: string) => "...",
+      function: (config: IkotaConfig, name: string) => "...",
     },
   },
 };
