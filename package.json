@@ -1,6 +1,6 @@
 {
   "name": "ikota",
-  "version": "0.8.8",
+  "version": "1.0.0",
   "description": "CLI automation tool for working with React",
   "author": "Domin-MND",
   "bin": {
