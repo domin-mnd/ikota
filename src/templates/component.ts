@@ -20,10 +20,6 @@ export async function createComponent(config: IkotaConfig, name: string): Promis
       'import type { FunctionComponent, ReactElement } from "react";\n';
   }
 
-  if (config.addConfigFile) {
-    response += 'import { buttonLabel } from "./config"\n';
-  }
-
   switch (config.preprocessor) {
     case "css":
     case "less":
