@@ -23,7 +23,7 @@ export function componentWithModuleStyles(
         config.addConfigFile ? "{buttonLabel}" : "Button"
       }</button>`,
       "  </div>",
-      ")",
+      ");",
     ].join("\n");
   } else {
     response += [

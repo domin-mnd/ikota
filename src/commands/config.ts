@@ -1,9 +1,10 @@
+import type { IkotaConfig, IkotaPlugin } from "../types";
 import { Command } from "@oclif/core";
 import color from "@oclif/color";
 import { prompt } from "inquirer";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
-import { IkotaConfig, IkotaPlugin } from "../types";
+import { capitalCase } from "../utils/capitalCase";
 
 interface PromptPreprocessor {
   name: string;
@@ -20,8 +21,10 @@ export default class Component extends Command {
 
     // Initialize plugins if they were provided
     let otherPreprocessors: PromptPreprocessor[] = [];
-    let plugins: IkotaPlugin[] = [];
-    if (existsSync("./ikota.config.js")) {
+    // Used in extending & adding preprocessors to the prompt
+    const configExists: boolean = existsSync("./ikota.config.js");
+
+    if (configExists) {
       try {
         const config: IkotaConfig = require(join(
           process.cwd(),
@@ -29,8 +32,6 @@ export default class Component extends Command {
         ));
 
         if (config.plugins && config.preprocessor) {
-          plugins = config.plugins;
-
           for (let i in config.plugins) {
             const pluginWithPreprocessor: IkotaPlugin = config.plugins[i];
 
@@ -40,7 +41,7 @@ export default class Component extends Command {
                 ...otherPreprocessors,
                 ...Object.keys(pluginWithPreprocessor.components).map(
                   (component): PromptPreprocessor => ({
-                    name: component,
+                    name: capitalCase(component),
                     value: component,
                   })
                 ),
@@ -113,21 +114,50 @@ export default class Component extends Command {
         default: false,
       },
     ]);
-    const template: string = [
-      "/**",
-      " * @type {import('ikota').IkotaConfig}",
-      " */",
-      "module.exports = {",
-      `  componentPath: "${res.componentPath}",`,
-      `  useTypescript: ${res.useTypescript},`,
-      `  addConfigFile: ${res.addConfigFile},`,
-      `  addIndexFile: ${res.addIndexFile},`,
-      `  preprocessor: "${res.preprocessor}",`,
-      `  useLambdaSimplifier: ${res.useLambdaSimplifier},`,
-      `  trailingSpace: ${res.trailingSpace},`,
-      `  plugins: []`,
-      "}",
-    ].join("\n");
-    writeFileSync("./ikota.config.js", template);
+
+    // If configuration exists, then do not change the template but extend it
+    if (configExists) {
+      let file: string = readFileSync("./ikota.config.js").toString();
+
+      for (let i in res) {
+        // RegEx for checking if there's a line existing
+        const valueRegex = new RegExp(i + ":(.*)");
+        // A line to be assigned/replaced with
+        const line = `${i}: ${
+          typeof res[i] === "string" ? `"${res[i]}"` : res[i]
+        },`;
+        if (valueRegex.test(file)) {
+          // Replace module.exports' values without checking if it's inside module.exports
+          file = file.replace(valueRegex, line);
+        } else {
+          // Initial indentation for what goes after module.exports = {\n
+          const initialIndentation = Array.from(file.matchAll(/module\.exports(?: *)=(?: *){\n( *)/gm)).map(match => match[1]);
+          // Assign a new line
+          file = file.replace(
+            /module\.exports(?: *)=(?: *){((?:.|\n)*)}/,
+            `module.exports = {\n${initialIndentation[0]}${line}$1}`
+          );
+        }
+      }
+      writeFileSync("./ikota.config.js", file);
+
+    } else {
+      const template: string = [
+        "/**",
+        " * @type {import('ikota').IkotaConfig}",
+        " */",
+        "module.exports = {",
+        `  componentPath: "${res.componentPath}",`,
+        `  useTypescript: ${res.useTypescript},`,
+        `  addConfigFile: ${res.addConfigFile},`,
+        `  addIndexFile: ${res.addIndexFile},`,
+        `  preprocessor: "${res.preprocessor}",`,
+        `  useLambdaSimplifier: ${res.useLambdaSimplifier},`,
+        `  trailingSpace: ${res.trailingSpace},`,
+        `  plugins: []`,
+        "}",
+      ].join("\n");
+      writeFileSync("./ikota.config.js", template);
+    }
   }
 }

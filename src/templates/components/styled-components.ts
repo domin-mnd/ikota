@@ -19,7 +19,7 @@ export function componentWithStyledComponents(
         config.addConfigFile ? "{buttonLabel}" : "Button"
       }</Button>`,
       "  </Container>",
-      ")",
+      ");",
     ].join("\n");
   } else {
     response += [

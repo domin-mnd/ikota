@@ -19,7 +19,7 @@ export function componentWithTailwindCSS(
         config.addConfigFile ? "{buttonLabel}" : "Button"
       }</button>`,
       "  </div>",
-      ")",
+      ");",
     ].join("\n");
   } else {
     response += [

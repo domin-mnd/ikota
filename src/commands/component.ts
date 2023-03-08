@@ -21,7 +21,7 @@ export default class Component extends Command {
     "<%= config.bin %> <%= command.id %>",
     "<%= config.bin %> <%= command.id %> niceBox --javascript",
   ];
-  
+
   static flags = {
     path: Flags.string({
       char: "p",
@@ -90,7 +90,10 @@ export default class Component extends Command {
     // The priority is: flags -> config file -> default values
     config = {
       componentPath: flags.path ?? config.componentPath ?? "src/components",
-      useTypescript: !flags.javascript ?? config.useTypescript ?? true,
+      useTypescript:
+        typeof flags.javascript !== "undefined"
+          ? !flags.javascript
+          : config.useTypescript ?? true,
       addConfigFile: flags.addConfig ?? config.addConfigFile ?? false,
       addIndexFile: flags.addIndex ?? config.addIndexFile ?? false,
       preprocessor:
