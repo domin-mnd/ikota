@@ -5,7 +5,12 @@ export function componentWithStyledComponents(
   config: IkotaConfig,
   name: string
 ): string {
-  let response = 'import { Container, Button } from "./styles";\n\n';
+  let response = 'import { Container, Button } from "./styles";\n';
+
+  if (config.useTypescript) response += 'import type { FunctionComponent, ReactElement } from "react";\n';
+  if (config.addConfigFile) response += 'import { buttonLabel } from "./config";\n';
+
+  response += "\n";
 
   if (config?.useLambdaSimplifier) {
     response += [

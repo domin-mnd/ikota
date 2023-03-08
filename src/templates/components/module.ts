@@ -9,7 +9,12 @@ export function componentWithModuleStyles(
   // However stylus' file ext is styl, so we slice
   let response = `import classes from "./styles.module.${
     config.preprocessor?.slice(0, 4)
-  }";\n\n`;
+  }";\n`;
+
+  if (config.useTypescript) response += 'import type { FunctionComponent, ReactElement } from "react";\n';
+  if (config.addConfigFile) response += 'import { buttonLabel } from "./config";\n';
+
+  response += "\n";
 
   if (config?.useLambdaSimplifier) {
     response += [

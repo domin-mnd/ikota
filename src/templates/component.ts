@@ -15,10 +15,11 @@ import { componentWithoutStyling } from "./components/none";
 export async function createComponent(config: IkotaConfig, name: string): Promise<string> {
   let response: string = "";
 
-  if (config.useTypescript) {
-    response +=
-      'import type { FunctionComponent, ReactElement } from "react";\n';
-  }
+  // No more types / config automatic imports
+  // if (config.useTypescript) {
+  //   response +=
+  //     'import type { FunctionComponent, ReactElement } from "react";\n';
+  // }
 
   switch (config.preprocessor) {
     case "css":

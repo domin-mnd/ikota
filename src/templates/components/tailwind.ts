@@ -7,6 +7,11 @@ export function componentWithTailwindCSS(
 ): string {
   let response: string = "";
 
+  if (config.useTypescript) response += 'import type { FunctionComponent, ReactElement } from "react";\n';
+  if (config.addConfigFile) response += 'import { buttonLabel } from "./config";\n';
+
+  if (config.addConfigFile || config.useTypescript) response += "\n";
+
   if (config?.useLambdaSimplifier) {
     response += [
       `\nexport const ${capitalCase(name)}${
